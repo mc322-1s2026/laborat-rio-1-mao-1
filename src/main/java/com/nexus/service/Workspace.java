@@ -1,6 +1,7 @@
 package com.nexus.service;
 
 import com.nexus.model.Task;
+import com.nexus.model.TaskStatus;
 import com.nexus.model.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -34,10 +35,30 @@ public class Workspace {
     }
 
     public float projectHealth() { 
+        // TODO when Project class is done
         return (float) 1;
     }
 
     public String globalBottlenecks() {
-        return "TO-DO";
+        int to_do = (int) tasks.stream()
+            .filter(e -> e.getStatus() == TaskStatus.TO_DO)
+            .count();
+
+        int in_progress = (int) tasks.stream()
+            .filter(e -> e.getStatus() == TaskStatus.IN_PROGRESS)
+            .count();
+
+        int blocked = (int) tasks.stream()
+            .filter(e -> e.getStatus() == TaskStatus.BLOCKED)
+            .count();
+
+        return java.util.Map.of(
+                "TO_DO", to_do,
+                "IN_PROGRESS", in_progress,
+                "BLOCKED", blocked
+            ).entrySet().stream()
+            .max(java.util.Map.Entry.comparingByValue())
+            .map(java.util.Map.Entry::getKey)
+            .orElse("NONE");
     }
 }

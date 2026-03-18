@@ -1,5 +1,6 @@
 package com.nexus.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class User {
@@ -14,6 +15,7 @@ public class User {
         }
         this.username = username;
         this.email = email;
+        this.assignedTasks = new ArrayList<>();
     }
 
     public String consultEmail() { return email; }
@@ -24,7 +26,9 @@ public class User {
     }
 
     public void assignTask(Task task) {
-        this.assignedTasks.add(task);
+        if (!this.assignedTasks.contains(task)) {
+            this.assignedTasks.add(task);
+        }
     }
 
     public List<Task> getAllTasks() {
