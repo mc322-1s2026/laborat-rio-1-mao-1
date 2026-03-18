@@ -21,6 +21,7 @@ public class Task {
         this.deadline = deadline;
         this.title = title;
         this.status = TaskStatus.TO_DO;
+        //this.owner = owner;
         
         // Ação do Aluno:
         totalTasksCreated++; 
