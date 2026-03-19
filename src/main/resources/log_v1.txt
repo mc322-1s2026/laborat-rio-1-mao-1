@@ -1,6 +1,7 @@
 CREATE_USER;nicolas.tesla;tesla@energy.com
 CREATE_USER;ada.lovelace;ada@calculus.gb
 CREATE_USER;alan.turing;alan@bletchley.org
-CREATE_TASK;Configurar Banco de Dados;2026-03-05
-CREATE_TASK;Implementar Autenticacao;2026-03-10
-CREATE_TASK;Ajustar Layout Mobile;2026-03-15
+CREATE_TASK;Configurar Banco de Dados;2026-03-05;2
+CREATE_TASK;Implementar Autenticacao;2026-03-10;3
+CREATE_TASK;Ajustar Layout Mobile;2026-03-15;1
+REPORT_STATUS

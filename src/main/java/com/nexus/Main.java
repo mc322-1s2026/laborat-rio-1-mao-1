@@ -46,8 +46,10 @@ public class Main {
                 }
                 case "1" -> addUser();
                 case "2" -> addTask();
-                case "3" -> listTasks();
-                case "4" -> {
+                case "3" -> assignTaskToUser();
+                case "4" -> listTasks();
+                case "5" -> changeTaskStatus();
+                case "6" -> {
                     System.out.println("1. Carregar Log V1 (Básico)\n2. Carregar Log V2 (Desafio)");
                     String logChoice = scanner.nextLine();
                     String file = (logChoice.equals("1")) ? "log_v1.txt" : "log_v2.txt";
@@ -70,8 +72,10 @@ public class Main {
             ======= NEXUS CORE: MENU =======
             1. Adicionar Usuário
             2. Adicionar Tarefa
-            3. Listar Todas as Tarefas
-            4. Processar Log de Ações
+            3. Atribuir Usuário à Tarefa
+            4. Listar Todas as Tarefas
+            5. Mudar Status da Tarefa
+            6. Processar Log de Ações
             0. Sair
             Escolha uma opção:\s""");
     }
@@ -107,12 +111,75 @@ public class Main {
             String title = scanner.nextLine();
             System.out.print("Prazo (AAAA-MM-DD): ");
             LocalDate deadline = LocalDate.parse(scanner.nextLine());
+            System.out.print("Estimated Effort (horas): ");
+            int estimatedEffort = Integer.parseInt(scanner.nextLine());
 
-            Task newTask = new Task(title, deadline);
+            Task newTask = new Task(title, deadline, estimatedEffort);
             workspace.addTask(newTask);
+
             System.out.println("[OK] Tarefa adicionada ao backlog.");
         } catch (DateTimeParseException e) {
             System.err.println("[ERRO] Formato de data inválido. Use AAAA-MM-DD.");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERRO] Estimated Effort inválido. Informe um número inteiro.");
+        } catch (NexusValidationException e) {
+            System.err.println("[ERRO] " + e.getMessage());
+        }
+    }
+
+    private static void assignTaskToUser() {
+        try {
+            System.out.print("ID da Tarefa: ");
+            int taskId = Integer.parseInt(scanner.nextLine());
+
+            Task task = workspace.getTasks().stream()
+                    .filter(t -> t.getId() == taskId)
+                    .findFirst()
+                    .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
+
+            System.out.print("Username do responsável: ");
+            String username = scanner.nextLine();
+
+            User owner = users.stream()
+                    .filter(u -> u.consultUsername().equals(username))
+                    .findFirst()
+                    .orElseThrow(() -> new NexusValidationException("Usuário não encontrado: " + username));
+
+            task.assignOwner(owner);
+            owner.assignTask(task);
+            System.out.println("[OK] Usuário atribuído à tarefa.");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERRO] ID da tarefa inválido.");
+        } catch (NexusValidationException e) {
+            System.err.println("[ERRO] " + e.getMessage());
+        }
+    }
+
+    private static void changeTaskStatus() {
+        try {
+            System.out.print("ID da Tarefa: ");
+            int taskId = Integer.parseInt(scanner.nextLine());
+
+            Task task = workspace.getTasks().stream()
+                    .filter(t -> t.getId() == taskId)
+                    .findFirst()
+                    .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
+
+            System.out.print("Novo status (IN_PROGRESS, DONE, BLOCKED): ");
+            String newStatus = scanner.nextLine().trim().toUpperCase();
+
+            switch (newStatus) {
+                case "IN_PROGRESS" -> task.moveToInProgress(task.getOwner());
+                case "DONE" -> task.markAsDone();
+                case "BLOCKED" -> task.setBlocked();
+                default -> throw new NexusValidationException("Status inválido: " + newStatus);
+            }
+
+            System.out.println("[OK] Status da tarefa atualizado para " + newStatus + ".");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERRO] ID da tarefa inválido.");
+        } catch (NexusValidationException e) {
+            System.err.println("[ERRO] " + e.getMessage());
         }
     }
 
@@ -125,22 +192,30 @@ public class Main {
         List<Task> tasks = workspace.getTasks();
         if (tasks.isEmpty()) {
             System.out.println("\n[!] Nenhuma tarefa no sistema.");
+            System.out.println("Erros de validação: " + Task.totalValidationErrors);
+            System.out.println("Workload ativo: " + Task.activeWorkload);
+            System.out.println("Total de tarefas: " + Task.totalTasksCreated);
             return;
         }
 
-        String header = "+----+----------------------+-------------+------------+";
+        String header = "+----+----------------------+-------------+------------+----------------------+--------+";
         System.out.println("\n" + header);
-        System.out.printf("| %-2s | %-20s | %-11s | %-10s |%n", "ID", "TÍTULO", "STATUS", "DEADLINE");
+        System.out.printf("| %-2s | %-20s | %-11s | %-10s | %-20s | %-6s |%n", "ID", "TÍTULO", "STATUS", "DEADLINE", "OWNER", "EFFORT");
         System.out.println(header);
 
         for (Task t : tasks) {
-            System.out.printf("| %-2d | %-20s | %-11s | %-10s |%n",
+            String owner = t.getOwner() != null ? t.getOwner().consultUsername() : "SEM OWNER";
+            System.out.printf("| %-2d | %-20s | %-11s | %-10s | %-20s | %-6d |%n",
                     t.getId(),
                     truncar(t.getTitle(), 20),
                     t.getStatus(),
-                    t.getDeadline());
+                    t.getDeadline(),
+                    truncar(owner, 20),
+                    t.getEstimatedEffort());
         }
         System.out.println(header);
+        System.out.println("Erros de validação: " + Task.totalValidationErrors);
+        System.out.println("Workload ativo: " + Task.activeWorkload);
         System.out.println("Total de tarefas: " + Task.totalTasksCreated);
     }
 
