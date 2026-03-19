@@ -10,8 +10,8 @@ public class Task {
 
     private static int nextId = 1;
 
-    private int id;
-    private LocalDate deadline; 
+    private final int id;
+    private final LocalDate deadline; 
     private String title;
     private TaskStatus status;
     private User owner;
@@ -28,20 +28,26 @@ public class Task {
         totalTasksCreated++; 
     }
 
+    /**
+     * Define um usuário para a tarefa.
+     * Regra: O usuário não pode ser nulo.
+     */
     public void assignOwner(User owner) {
         if (owner == null) {
+            totalValidationErrors++;
             throw new NexusValidationException("Owner não pode ser nulo.");
         }
         this.owner = owner;
     }
-    //test commit
 
     /**
      * Move a tarefa para IN_PROGRESS.
      * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
      */
-    public void moveToInProgress(User user) {
-        if(user != null && this.status != TaskStatus.BLOCKED) {
+    public void moveToInProgress() {
+        if(this.status == TaskStatus.IN_PROGRESS) return;
+
+        if(this.owner != null && this.status != TaskStatus.BLOCKED) {
             this.status = TaskStatus.IN_PROGRESS;
             activeWorkload += this.estimatedEffort;
         }
@@ -56,9 +62,13 @@ public class Task {
      * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
      */
     public void markAsDone() {
+        if(this.status == TaskStatus.DONE) return;
+
         if(this.status != TaskStatus.BLOCKED) {
+            if(this.status == TaskStatus.IN_PROGRESS) {
+                activeWorkload -= this.estimatedEffort;    
+            }
             this.status = TaskStatus.DONE;
-            activeWorkload -= this.estimatedEffort;
         }
         else {
             totalValidationErrors++;
@@ -66,25 +76,35 @@ public class Task {
         }
     }
 
+    /**
+     * Bloqueia a tarefa.
+     * Regra: A tarefa deve ser movida para BLOCKED se não estiver DONE.
+     */
     public void setBlocked() {
+        if (this.status == TaskStatus.BLOCKED) return;
+
         if (this.status != TaskStatus.DONE) {
-            if(this.status == TaskStatus.BLOCKED) {
-                //this.status = TaskStatus.TO_DO;
+            if (this.status == TaskStatus.IN_PROGRESS) {
+                activeWorkload -= this.estimatedEffort;
+            } 
+            this.status = TaskStatus.BLOCKED; 
             }
-            else {
-                if (this.status == TaskStatus.IN_PROGRESS) {
-                    activeWorkload -= this.estimatedEffort;
-                } 
-                this.status = TaskStatus.BLOCKED; 
-            }
+        else {
+            totalValidationErrors++;
+            throw new NexusValidationException("Task feita não pode ser bloqueada");
         }
     }
 
-    // Getters
+    /** Retorna o ID da tarefa */
     public int getId() { return id; }
+    /** Retorna o status atual */
     public TaskStatus getStatus() { return status; }
+    /** Retorna o título */
     public String getTitle() { return title; }
+    /** Retorna o prazo final */
     public LocalDate getDeadline() { return deadline; }
+    /** Retorna o dono da tarefa */
     public User getOwner() { return owner; }
+    /** Retorna o esforço estimado em horas */
     public int getEstimatedEffort() { return estimatedEffort; }
 }
