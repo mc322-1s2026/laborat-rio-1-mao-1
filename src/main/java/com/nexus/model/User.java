@@ -14,8 +14,11 @@ public class User {
         if (username == null || username.isBlank()) {
             throw new IllegalArgumentException("Username não pode ser vazio.");
         }
-        if (email == null || email.isBlank() || !email.contains("@")) {
-            throw new IllegalArgumentException("Email não pode ser vazio e deve conter '@'");
+        if (email == null || email.isBlank()) {
+            throw new IllegalArgumentException("Email não pode ser vazio.");
+        }
+        if (!email.contains("@")) {
+            throw new NexusValidationException("Email deve conter '@'");
         }
 
         this.username = username;
@@ -42,6 +45,10 @@ public class User {
      * Adiciona uma tarefa à lista de tarefas do usuário.
      */
     public void assignTask(Task task) {
+        if (task == null) {
+            throw new IllegalArgumentException("Tarefa não pode ser nula.");
+        }
+
         if (!this.assignedTasks.contains(task)) {
             this.assignedTasks.add(task);
         }
