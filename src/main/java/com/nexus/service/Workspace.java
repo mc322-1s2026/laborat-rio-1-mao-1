@@ -22,16 +22,16 @@ public class Workspace {
     }
 
     public List<User> topPerformers(List<User> users) {
-        return users.stream()
+        return Collections.unmodifiableList(users.stream()
             .sorted(Comparator.comparing(User::getCountDoneTasks))
             .limit(3)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     public List<User> overloadedUsers(List<User> users) {
-        return users.stream()
+        return Collections.unmodifiableList(users.stream()
             .filter(e -> e.getCountInProgressTasks() > 10)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     public float projectHealth() { 
