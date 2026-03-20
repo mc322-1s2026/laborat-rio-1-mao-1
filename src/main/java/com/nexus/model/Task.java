@@ -4,15 +4,15 @@ import com.nexus.exception.NexusValidationException;
 import java.time.LocalDate;
 
 public class Task {
-    public static int totalTasksCreated = 0;
-    public static int totalValidationErrors = 0;
-    public static int activeWorkload = 0;
+    private static int totalTasksCreated = 0;
+    private static int totalValidationErrors = 0;
+    private static int activeWorkload = 0;
 
     private static int nextId = 1;
 
     private final int id;
     private final LocalDate deadline; 
-    private String title;
+    private final String title;
     private TaskStatus status;
     private User owner;
     private int estimatedEffort;
@@ -107,4 +107,28 @@ public class Task {
     public User getOwner() { return owner; }
     /** Retorna o esforço estimado em horas */
     public int getEstimatedEffort() { return estimatedEffort; }
+
+    /**
+     * Retorna o total de tarefas criadas no sistema.
+     * @return número total de tarefas
+     */
+    public static int getTotalTasksCreated() {
+        return totalTasksCreated;
+    }
+
+    /**
+     * Retorna o total de erros de validação ocorridos.
+     * @return número de erros
+     */
+    public static int getTotalValidationErrors() {
+        return totalValidationErrors;
+    }
+
+    /**
+     * Retorna a carga de trabalho ativa (em horas).
+     * @return horas em progresso
+     */
+    public static int getActiveWorkload() {
+        return activeWorkload;
+    }
 }

@@ -192,9 +192,9 @@ public class Main {
         List<Task> tasks = workspace.getTasks();
         if (tasks.isEmpty()) {
             System.out.println("\n[!] Nenhuma tarefa no sistema.");
-            System.out.println("Erros de validação: " + Task.totalValidationErrors);
-            System.out.println("Workload ativo: " + Task.activeWorkload);
-            System.out.println("Total de tarefas: " + Task.totalTasksCreated);
+            System.out.println("Erros de validação: " + Task.getTotalValidationErrors());
+            System.out.println("Workload ativo: " + Task.getActiveWorkload());
+            System.out.println("Total de tarefas: " + Task.getTotalTasksCreated());
             return;
         }
 
@@ -214,9 +214,9 @@ public class Main {
                     t.getEstimatedEffort());
         }
         System.out.println(header);
-        System.out.println("Erros de validação: " + Task.totalValidationErrors);
-        System.out.println("Workload ativo: " + Task.activeWorkload);
-        System.out.println("Total de tarefas: " + Task.totalTasksCreated);
+        System.out.println("Erros de validação: " + Task.getTotalValidationErrors());
+        System.out.println("Workload ativo: " + Task.getActiveWorkload());
+        System.out.println("Total de tarefas: " + Task.getTotalTasksCreated());
     }
 
     /**
