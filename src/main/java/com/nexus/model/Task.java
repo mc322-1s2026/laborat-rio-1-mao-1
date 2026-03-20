@@ -18,6 +18,16 @@ public class Task {
     private int estimatedEffort;
 
     public Task(String title, LocalDate deadline, int effort) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("O título da tarefa não pode ser vazio.");
+        }
+        if (deadline == null) {
+            throw new IllegalArgumentException("A data de vencimento não pode ser nula.");
+        }
+        if (effort <= 0) {
+            throw new IllegalArgumentException("O esforço estimado deve ser um valor positivo.");
+        }
+
         this.id = nextId++;
         this.deadline = deadline;
         this.title = title;
