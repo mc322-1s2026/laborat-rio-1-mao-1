@@ -35,6 +35,8 @@ public class LogProcessor {
                         System.err.println("[ERRO DE REGRAS] Falha no comando '" + line + "': " + e.getMessage());
                     } catch (NumberFormatException e) {
                         System.err.println("[ERRO DE FORMATO] ID ou esforço inválido no comando '" + line + "': " + e.getMessage());
+                    } catch (IllegalArgumentException e) {
+                        System.err.println("[ERRO DE DADOS] Falha no comando '" + line + "': " + e.getMessage());
                     } catch (DateTimeParseException e) {
                         System.err.println("[ERRO DE FORMATO] Data inválida no comando '" + line + "': " + e.getMessage());
                     } catch (ArrayIndexOutOfBoundsException e) {

@@ -1,0 +1,49 @@
+# Casos de erro para LogProcessor
+
+# Ação desconhecida
+UNKNOWN_COMMAND;param1;param2
+
+# CREATE_USER
+# Comando incompleto (faltando email)
+CREATE_USER;user1
+# Comando incompleto (faltando nome e email)
+CREATE_USER
+
+# CREATE_TASK
+# Comando incompleto (faltando data e esforço)
+CREATE_TASK;Tarefa de Teste
+# Comando incompleto (faltando esforço)
+CREATE_TASK;Tarefa de Teste;2026-04-01
+# Data inválida
+CREATE_TASK;Tarefa de Teste;data-invalida;5
+# Esforço inválido
+CREATE_TASK;Tarefa de Teste;2026-04-01;esforco-invalido
+
+# ASSIGN_USER
+# Comando incompleto (faltando ID do usuário)
+ASSIGN_USER;1
+# ID da tarefa inválido
+ASSIGN_USER;id-tarefa-invalido;1
+# ID do usuário inválido
+ASSIGN_USER;1;id-usuario-invalido
+# Tarefa não existente (NexusValidationException)
+ASSIGN_USER;999;1
+# Usuário não existente (NexusValidationException)
+ASSIGN_USER;1;999
+
+# CHANGE_STATUS
+# Comando incompleto (faltando novo status)
+CHANGE_STATUS;1
+# ID da tarefa inválido
+CHANGE_STATUS;id-tarefa-invalido;IN_PROGRESS
+# Status inválido (RuntimeException: No enum constant)
+CHANGE_STATUS;1;STATUS_INVALIDO
+# Tarefa não existente (NexusValidationException)
+CHANGE_STATUS;999;DONE
+
+# REPORT_STATUS
+# Este comando não possui parâmetros que possam causar erros de formato diretamente na linha de comando,
+# mas pode expor erros se os dados subjacentes (tarefas, usuários) estiverem em um estado inconsistente,
+# o que seria capturado por NexusValidationException durante o processamento.
+# Exemplo: uma tarefa com um usuário atribuído que não existe mais.
+REPORT_STATUS
