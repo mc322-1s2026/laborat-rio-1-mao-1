@@ -10,15 +10,15 @@ import java.time.LocalDate;
  * Uma tarefa pode estar em um de quatro estados: TO_DO, IN_PROGRESS, BLOCKED ou DONE.
  */
 public class Task {
-    public static int totalTasksCreated = 0;
-    public static int totalValidationErrors = 0;
-    public static int activeWorkload = 0;
+    private static int totalTasksCreated = 0;
+    private static int totalValidationErrors = 0;
+    private static int activeWorkload = 0;
 
     private static int nextId = 1;
 
     private final int id;
     private final LocalDate deadline; 
-    private String title;
+    private final String title;
     private TaskStatus status;
     private User owner;
     private int estimatedEffort;
@@ -31,6 +31,16 @@ public class Task {
      * @param effort o esforço estimado em horas
      */
     public Task(String title, LocalDate deadline, int effort) {
+        if (title == null || title.isBlank()) {
+            throw new IllegalArgumentException("O título da tarefa não pode ser vazio.");
+        }
+        if (deadline == null) {
+            throw new IllegalArgumentException("A data de vencimento não pode ser nula.");
+        }
+        if (effort <= 0) {
+            throw new IllegalArgumentException("O esforço estimado deve ser um valor positivo.");
+        }
+
         this.id = nextId++;
         this.deadline = deadline;
         this.title = title;
@@ -49,7 +59,7 @@ public class Task {
      */
     public void assignOwner(User owner) {
         if (owner == null) {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Owner não pode ser nulo.");
         }
         this.owner = owner;
@@ -68,7 +78,7 @@ public class Task {
             activeWorkload += this.estimatedEffort;
         }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task bloqueada ou sem dono.");
         }
     }
@@ -88,7 +98,7 @@ public class Task {
             this.status = TaskStatus.DONE;
         }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task bloqueada.");
         }
     }
@@ -108,7 +118,7 @@ public class Task {
             this.status = TaskStatus.BLOCKED; 
             }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task feita não pode ser bloqueada");
         }
     }
@@ -148,4 +158,35 @@ public class Task {
      * @return horas estimadas
      */
     public int getEstimatedEffort() { return estimatedEffort; }
+
+    /**
+     * Retorna o total de tarefas criadas no sistema.
+     * @return número total de tarefas
+     */
+    public static int getTotalTasksCreated() {
+        return totalTasksCreated;
+    }
+
+    /**
+     * Retorna o total de erros de validação ocorridos.
+     * @return número de erros
+     */
+    public static int getTotalValidationErrors() {
+        return totalValidationErrors;
+    }
+
+    /**
+     * Incrementa o total de erros de validação ocorridos no sistema.
+     */
+    public static void incrementValidationErrors() {
+        totalValidationErrors++;
+    }
+
+    /**
+     * Retorna a carga de trabalho ativa (em horas).
+     * @return horas em progresso
+     */
+    public static int getActiveWorkload() {
+        return activeWorkload;
+    }
 }

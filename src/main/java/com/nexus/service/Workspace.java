@@ -44,10 +44,10 @@ public class Workspace {
      * @return até 3 usuários com melhor desempenho
      */
     public List<User> topPerformers(List<User> users) {
-        return users.stream()
+        return Collections.unmodifiableList(users.stream()
             .sorted(Comparator.comparing(User::getCountDoneTasks))
             .limit(3)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     /**
@@ -57,9 +57,9 @@ public class Workspace {
      * @return usuários sobrecarregados
      */
     public List<User> overloadedUsers(List<User> users) {
-        return users.stream()
+        return Collections.unmodifiableList(users.stream()
             .filter(e -> e.getCountInProgressTasks() > 10)
-            .collect(Collectors.toList());
+            .collect(Collectors.toList()));
     }
 
     /**

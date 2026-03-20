@@ -12,9 +12,9 @@ import com.nexus.exception.NexusValidationException;
  */
 public class Project {
 
-    private String name;
-    private List<Task> taskList;
-    private int totalBudget;
+    private final String name;
+    private final List<Task> taskList;
+    private final int totalBudget;
     private int currentBudget;
 
     /**
@@ -74,7 +74,6 @@ public class Project {
 
         if (!this.taskList.contains(task)) {
             if (this.currentBudget + taskEffort > this.totalBudget) {
-                Task.totalValidationErrors++;
                 throw new NexusValidationException("A adição da tarefa supera o orçamento do projeto.");
             }
             else {
