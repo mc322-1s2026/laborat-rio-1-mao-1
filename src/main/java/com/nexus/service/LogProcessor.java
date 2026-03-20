@@ -136,9 +136,18 @@ public class LogProcessor {
             .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
 
         switch(status) {
-            case "IN_PROGRESS" -> task.moveToInProgress();
-            case "DONE" -> task.markAsDone();
-            case "BLOCKED" -> task.setBlocked();
+            case "IN_PROGRESS" -> {
+                task.moveToInProgress();
+                System.out.println("[LOG] Status da tarefa " + taskId + " alterado para IN_PROGRESS");
+            }
+            case "DONE" -> {
+                task.markAsDone();
+                System.out.println("[LOG] Status da tarefa " + taskId + " alterado para DONE");
+            }
+            case "BLOCKED" -> {
+                task.setBlocked();
+                System.out.println("[LOG] Status da tarefa " + taskId + " alterado para BLOCKED");
+            }
             default -> System.err.println("[WARN] Status desconhecido: " + status);
         }
     }

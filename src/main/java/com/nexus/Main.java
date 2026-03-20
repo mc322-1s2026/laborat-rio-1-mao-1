@@ -47,13 +47,15 @@ public class Main {
                 case "1" -> addUser();
                 case "2" -> addTask();
                 case "3" -> assignTaskToUser();
-                case "4" -> listTasks();
-                case "5" -> changeTaskStatus();
-                case "6" -> {
-                    System.out.println("1. Carregar Log V1 (Básico)\n2. Carregar Log V2 (Desafio)");
-                    String logChoice = scanner.nextLine();
-                    String file = (logChoice.equals("1")) ? "log_v1.txt" : "log_v2.txt";
-                    logProcessor.processLog(file, workspace, users);
+                case "4" -> listUsers();
+                case "5" -> listTasks();
+                case "6" -> changeTaskStatus();
+                case "7" -> {
+                    System.out.print("Digite o número da versão do log para carregar (ex: 1 para log_v1.txt): ");
+                    String logVersion = scanner.nextLine();
+                    String fileName = "log_v" + logVersion + ".txt";
+                    System.out.println("Carregando " + fileName + "...");
+                    logProcessor.processLog(fileName, workspace, users);
                 }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
@@ -73,9 +75,10 @@ public class Main {
             1. Adicionar Usuário
             2. Adicionar Tarefa
             3. Atribuir Usuário à Tarefa
-            4. Listar Todas as Tarefas
-            5. Mudar Status da Tarefa
-            6. Processar Log de Ações
+            4. Listar Usuários
+            5. Listar Todas as Tarefas
+            6. Mudar Status da Tarefa
+            7. Processar Log de Ações
             0. Sair
             Escolha uma opção:\s""");
     }
@@ -217,6 +220,36 @@ public class Main {
         System.out.println("Erros de validação: " + Task.getTotalValidationErrors());
         System.out.println("Workload ativo: " + Task.getActiveWorkload());
         System.out.println("Total de tarefas: " + Task.getTotalTasksCreated());
+    }
+
+    /**
+     * Lista todos os usuários com a contagem de tarefas por status em formato de tabela.
+     */
+    private static void listUsers() {
+        if (users.isEmpty()) {
+            System.out.println("\n[!] Nenhum usuário no sistema.");
+            return;
+        }
+
+        String header = "+----------------------+------------------------+---------+-----------+----------+";
+        System.out.println("\n" + header);
+        System.out.printf("| %-20s | %-22s | %-7s | %-9s | %-8s |%n", "USERNAME", "EMAIL", "TO DO", "IN PROG", "DONE");
+        System.out.println(header);
+
+        for (User user : users) {
+            List<Task> tasks = user.getAllTasks();
+            long toDoCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.TO_DO).count();
+            long inProgressCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.IN_PROGRESS).count();
+            long doneCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.DONE).count();
+
+            System.out.printf("| %-20s | %-22s | %-7d | %-9d | %-8d |%n",
+                    truncar(user.consultUsername(), 20),
+                    truncar(user.consultEmail(), 22),
+                    toDoCount,
+                    inProgressCount,
+                    doneCount);
+        }
+        System.out.println(header);
     }
 
     /**
