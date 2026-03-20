@@ -3,6 +3,12 @@ package com.nexus.model;
 import com.nexus.exception.NexusValidationException;
 import java.time.LocalDate;
 
+/**
+ * Representa uma tarefa no sistema Nexus.
+ * 
+ * Cada tarefa possui um ID único, título, prazo, status e um usuário responsável.
+ * Uma tarefa pode estar em um de quatro estados: TO_DO, IN_PROGRESS, BLOCKED ou DONE.
+ */
 public class Task {
     public static int totalTasksCreated = 0;
     public static int totalValidationErrors = 0;
@@ -17,6 +23,13 @@ public class Task {
     private User owner;
     private int estimatedEffort;
 
+    /**
+     * Cria uma nova tarefa.
+     * 
+     * @param title o título da tarefa
+     * @param deadline a data de vencimento da tarefa
+     * @param effort o esforço estimado em horas
+     */
     public Task(String title, LocalDate deadline, int effort) {
         this.id = nextId++;
         this.deadline = deadline;
@@ -29,8 +42,10 @@ public class Task {
     }
 
     /**
-     * Define um usuário para a tarefa.
-     * Regra: O usuário não pode ser nulo.
+     * Define um usuário como responsável pela tarefa.
+     * 
+     * @param owner o usuário responsável
+     * @throws NexusValidationException se o owner for nulo
      */
     public void assignOwner(User owner) {
         if (owner == null) {
@@ -41,8 +56,9 @@ public class Task {
     }
 
     /**
-     * Move a tarefa para IN_PROGRESS.
-     * Regra: Só é possível se houver um owner atribuído e não estiver BLOCKED.
+     * Move a tarefa para o estado IN_PROGRESS.
+     * 
+     * @throws NexusValidationException se não houver um responsável ou se estiver bloqueada
      */
     public void moveToInProgress() {
         if(this.status == TaskStatus.IN_PROGRESS) return;
@@ -58,8 +74,9 @@ public class Task {
     }
 
     /**
-     * Finaliza a tarefa.
-     * Regra: Só pode ser movida para DONE se não estiver BLOCKED.
+     * Marca a tarefa como finalizada (DONE).
+     * 
+     * @throws NexusValidationException se a tarefa estiver bloqueada
      */
     public void markAsDone() {
         if(this.status == TaskStatus.DONE) return;
@@ -77,8 +94,9 @@ public class Task {
     }
 
     /**
-     * Bloqueia a tarefa.
-     * Regra: A tarefa deve ser movida para BLOCKED se não estiver DONE.
+     * Bloqueia a tarefa, impedindo sua progressão.
+     * 
+     * @throws NexusValidationException se a tarefa já estiver finalizada
      */
     public void setBlocked() {
         if (this.status == TaskStatus.BLOCKED) return;
@@ -95,16 +113,39 @@ public class Task {
         }
     }
 
-    /** Retorna o ID da tarefa */
+    /**
+     * Retorna o ID único da tarefa.
+     * @return o ID da tarefa
+     */
     public int getId() { return id; }
-    /** Retorna o status atual */
+    
+    /**
+     * Retorna o status atual da tarefa.
+     * @return o status (TO_DO, IN_PROGRESS, BLOCKED ou DONE)
+     */
     public TaskStatus getStatus() { return status; }
-    /** Retorna o título */
+    
+    /**
+     * Retorna o título da tarefa.
+     * @return o título
+     */
     public String getTitle() { return title; }
-    /** Retorna o prazo final */
+    
+    /**
+     * Retorna a data de vencimento.
+     * @return a data final
+     */
     public LocalDate getDeadline() { return deadline; }
-    /** Retorna o dono da tarefa */
+    
+    /**
+     * Retorna o usuário responsável pela tarefa.
+     * @return o owner da tarefa, ou null se não atribuído
+     */
     public User getOwner() { return owner; }
-    /** Retorna o esforço estimado em horas */
+    
+    /**
+     * Retorna o esforço estimado em horas.
+     * @return horas estimadas
+     */
     public int getEstimatedEffort() { return estimatedEffort; }
 }
