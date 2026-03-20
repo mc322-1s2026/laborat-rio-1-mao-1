@@ -34,7 +34,7 @@ public class Task {
      */
     public void assignOwner(User owner) {
         if (owner == null) {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Owner não pode ser nulo.");
         }
         this.owner = owner;
@@ -52,7 +52,7 @@ public class Task {
             activeWorkload += this.estimatedEffort;
         }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task bloqueada ou sem dono.");
         }
     }
@@ -71,7 +71,7 @@ public class Task {
             this.status = TaskStatus.DONE;
         }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task bloqueada.");
         }
     }
@@ -90,7 +90,7 @@ public class Task {
             this.status = TaskStatus.BLOCKED; 
             }
         else {
-            totalValidationErrors++;
+            incrementValidationErrors();
             throw new NexusValidationException("Task feita não pode ser bloqueada");
         }
     }
@@ -122,6 +122,13 @@ public class Task {
      */
     public static int getTotalValidationErrors() {
         return totalValidationErrors;
+    }
+
+    /**
+     * Incrementa o total de erros de validação ocorridos no sistema.
+     */
+    public static void incrementValidationErrors() {
+        totalValidationErrors++;
     }
 
     /**
