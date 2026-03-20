@@ -7,8 +7,28 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Processador de logs que executa operações no sistema Nexus.
+ * 
+ * Lê arquivos de log e executa comandos para criar usuários, tarefas,
+ * atribuir usuários, alterar status e gerar relatórios.
+ */
 public class LogProcessor {
 
+    /**
+     * Processa um arquivo de log e executa os comandos nele definidos.
+     * 
+     * Comandos suportados:
+     * - CREATE_USER;username;email
+     * - CREATE_TASK;title;deadline;effort
+     * - ASSIGN_USER;taskId;username
+     * - CHANGE_STATUS;taskId;status
+     * - REPORT_STATUS
+     * 
+     * @param fileName o nome do arquivo de log a processar
+     * @param workspace o workspace para adicionar tarefas
+     * @param users a lista de usuários do sistema
+     */
     public void processLog(String fileName, Workspace workspace, List<User> users) {
         try {
             // Busca o arquivo dentro da pasta de recursos do projeto (target/classes)

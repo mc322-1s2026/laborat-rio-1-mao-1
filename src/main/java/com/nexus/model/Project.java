@@ -4,14 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import com.nexus.exception.NexusValidationException;
 
-
-public class Project{
+/**
+ * Representa um projeto no sistema Nexus.
+ * 
+ * Um projeto agrupa tarefas e possui um orçamento de horas limitado.
+ * Não é possível adicionar tarefas que excedam o orçamento total.
+ */
+public class Project {
 
     private String name;
     private List<Task> taskList;
     private int totalBudget;
     private int currentBudget;
 
+    /**
+     * Cria um novo projeto com orçamento definido.
+     * 
+     * @param name o nome do projeto (não pode ser vazio)
+     * @param totalBudget o orçamento total em horas (deve ser maior que 0)
+     * @throws IllegalArgumentException se o nome for vazio ou orçamento inválido
+     */
     public Project(String name, int totalBudget) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("Nome não pode ser vazio.");
@@ -26,20 +38,32 @@ public class Project{
         this.currentBudget = 0;
     }
 
-    /** Retorna o nome do projeto. */
+    /**
+     * Retorna o nome do projeto.
+     * @return o nome
+     */
     public String consultName() { return name; }
     
-    /** Retorna o orçamento total do projeto. */
+    /**
+     * Retorna o orçamento total em horas do projeto.
+     * @return horas totais disponíveis
+     */
     public int consultTotalBudget() { return totalBudget; }
     
-    /** Retorna a quantidade atual de horas do projeto. */
+    /**
+     * Retorna o orçamento já utilizado em horas.
+     * @return horas já alocadas
+     */
     public int consultCurrentBudget() { return this.currentBudget; }
 
 
     /**
      * Adiciona uma nova tarefa ao projeto.
-     * Regra: A soma das horas atuais do projeto mais as da tarefa devem ser inferiores
-     * ao orçamento total.
+     * Verifica se o orçamento permite adicionar a tarefa.
+     * 
+     * @param task a tarefa a ser adicionada
+     * @throws IllegalArgumentException se a tarefa for nula
+     * @throws NexusValidationException se adicionar esta tarefa exceder o orçamento
      */
     public void addTask(Task task) {
         if (task == null) {
@@ -60,8 +84,10 @@ public class Project{
         }
     }
 
-    /** 
-     * Retorna a lista de tarefas do projeto.
+    /**
+     * Retorna uma cópia da lista de tarefas do projeto.
+     * 
+     * @return lista imutável de tarefas
      */
     public List<Task> getAllTasks() {
         return List.copyOf(this.taskList);

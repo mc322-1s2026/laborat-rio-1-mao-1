@@ -1,8 +1,15 @@
 package com.nexus.model;
 
 /**
- * Representa os estados possíveis de uma tarefa no motor Nexus.
+ * Enumeração que representa os possíveis estados de uma tarefa.
  */
 public enum TaskStatus {
-    TO_DO, IN_PROGRESS, BLOCKED, DONE
+    /** Tarefa não iniciada */
+    TO_DO,
+    /** Tarefa em execução */
+    IN_PROGRESS,
+    /** Tarefa bloqueada */
+    BLOCKED,
+    /** Tarefa concluída */
+    DONE
 }
