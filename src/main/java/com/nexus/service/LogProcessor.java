@@ -67,7 +67,7 @@ public class LogProcessor {
                                     .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
 
                                 switch(status) {
-                                    case "IN_PROGRESS" -> { task.moveToInProgress(task.getOwner()); }
+                                    case "IN_PROGRESS" -> { task.moveToInProgress(); }
                                     case "DONE" -> { task.markAsDone(); }
                                     case "BLOCKED" -> { task.setBlocked(); }
                                     default -> System.err.println("[WARN] Status desconhecido: " + status);

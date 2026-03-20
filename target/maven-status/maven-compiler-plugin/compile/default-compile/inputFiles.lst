@@ -1,5 +1,6 @@
 /workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/Main.java
 /workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/exception/NexusValidationException.java
+/workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/model/Project.java
 /workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/model/Task.java
 /workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/model/TaskStatus.java
 /workspaces/laborat-rio-1-mao-1/src/main/java/com/nexus/model/User.java

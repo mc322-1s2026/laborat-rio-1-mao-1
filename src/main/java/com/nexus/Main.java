@@ -169,7 +169,7 @@ public class Main {
             String newStatus = scanner.nextLine().trim().toUpperCase();
 
             switch (newStatus) {
-                case "IN_PROGRESS" -> task.moveToInProgress(task.getOwner());
+                case "IN_PROGRESS" -> task.moveToInProgress();
                 case "DONE" -> task.markAsDone();
                 case "BLOCKED" -> task.setBlocked();
                 default -> throw new NexusValidationException("Status inválido: " + newStatus);
