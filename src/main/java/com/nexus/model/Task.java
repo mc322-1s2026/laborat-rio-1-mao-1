@@ -73,13 +73,13 @@ public class Task {
     public void moveToInProgress() {
         if(this.status == TaskStatus.IN_PROGRESS) return;
 
-        if(this.owner != null && this.status != TaskStatus.BLOCKED) {
+        if(this.owner != null && this.status != TaskStatus.BLOCKED && this.status != TaskStatus.DONE) {
             this.status = TaskStatus.IN_PROGRESS;
             activeWorkload += this.estimatedEffort;
         }
         else {
             incrementValidationErrors();
-            throw new NexusValidationException("Task bloqueada ou sem dono.");
+            throw new NexusValidationException("Task sem dono, bloqueada ou já concluída.");
         }
     }
 

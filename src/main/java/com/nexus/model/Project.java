@@ -63,7 +63,7 @@ public class Project {
      * 
      * @param task a tarefa a ser adicionada
      * @throws IllegalArgumentException se a tarefa for nula
-     * @throws NexusValidationException se adicionar esta tarefa exceder o orçamento
+     * @throws NexusValidationException se adicionar esta tarefa excede o orçamento
      */
     public void addTask(Task task) {
         if (task == null) {
