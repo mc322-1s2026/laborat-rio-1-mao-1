@@ -59,7 +59,7 @@ public class Main {
                     String logVersion = scanner.nextLine();
                     String fileName = "log_v" + logVersion + ".txt";
                     System.out.println("Carregando " + fileName + "...");
-                    logProcessor.processLog(fileName, workspace, users);
+                    logProcessor.processLog(fileName, workspace, users, projects);
                 }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
