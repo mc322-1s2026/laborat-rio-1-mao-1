@@ -1,8 +1,6 @@
 package com.nexus.service;
 
-import com.nexus.model.Task;
-import com.nexus.model.TaskStatus;
-import com.nexus.model.User;
+import com.nexus.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;

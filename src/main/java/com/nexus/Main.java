@@ -60,7 +60,7 @@ public class Main {
                     String fileName = "log_v" + logVersion + ".txt";
                     System.out.println("Carregando " + fileName + "...");
                     logProcessor.processLog(fileName, workspace, users, projects);
-                }
+                  }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
         }
@@ -124,8 +124,16 @@ public class Main {
             LocalDate deadline = LocalDate.parse(scanner.nextLine());
             System.out.print("Estimated Effort (horas): ");
             int estimatedEffort = Integer.parseInt(scanner.nextLine());
+            System.out.print("Nome do Projeto: ");
+            String projectTitle = scanner.nextLine();
+
+            Project project = projects.stream()
+                .filter(p -> p.consultName().equals(projectTitle))
+                .findFirst()
+                .orElseThrow(() -> new NexusValidationException("Projeto '" + projectTitle + "' não encontrado."));
 
             Task newTask = new Task(title, deadline, estimatedEffort);
+            project.addTask(newTask);
             workspace.addTask(newTask);
 
             System.out.println("[OK] Tarefa adicionada ao backlog.");
@@ -288,9 +296,27 @@ public class Main {
             return;
         }
 
-        String header = "+----------------------+------------------------+---------+-----------+----------+";
+        String header = "+----------------------+----------------+----------------+---------+-----------+----------+";
         System.out.println("\n" + header);
-        System.out.printf("| %-20s | %-22s | %-7s | %-9s | %-8s |%n", "NAME", "CURRENTBUDGET", "TOTAL BUDGET", "TO DO", "IN PROG", "DONE");
+        System.out.printf("| %-20s | %-14s | %-14s | %-7s | %-9s | %-8s |%n", "NAME", "CURRENT BUDGET", "TOTAL BUDGET", "TO DO", "IN PROG", "DONE");
+        System.out.println(header);
+
+        for (Project project : projects) {
+            List<Task> tasks = project.getAllTasks();
+            
+            long toDoCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.TO_DO).count();
+            long inProgressCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.IN_PROGRESS).count();
+            long doneCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.DONE).count();
+
+            System.out.printf("| %-20s | %-14d | %-14d | %-7d | %-9d | %-8d |%n",
+                    truncar(project.consultName(), 20),
+                    project.consultCurrentBudget(),
+                    project.consultTotalBudget(),
+                    toDoCount,
+                    inProgressCount,
+                    doneCount);
+        }
+        System.out.println(header);
     }
 
     /**
