@@ -30,7 +30,7 @@ public class LogProcessor {
      * @param workspace o workspace para adicionar tarefas
      * @param users a lista de usuários do sistema
      */
-    public void processLog(String fileName, Workspace workspace, List<User> users) {
+    public void processLog(String fileName, Workspace workspace, List<User> users, List<Project> projects) {
         try {
             // Busca o arquivo dentro da pasta de recursos do projeto (target/classes)
             var resource = getClass().getClassLoader().getResourceAsStream(fileName);
@@ -50,7 +50,7 @@ public class LogProcessor {
                     String action = p[0];
 
                     try {
-                        executeCommand(action, p, workspace, users, line);
+                        executeCommand(action, p, workspace, users, projects, line);
                     } catch (NexusValidationException e) {
                         System.err.println("[ERRO DE REGRAS] Falha no comando '" + line + "': " + e.getMessage());
                     } catch (NumberFormatException e) {
@@ -80,13 +80,14 @@ public class LogProcessor {
      * @param users a lista de usuários
      * @param line a linha original para relatório de erro
      */
-    private void executeCommand(String action, String[] p, Workspace workspace, List<User> users, String line) {
+    private void executeCommand(String action, String[] p, Workspace workspace, List<User> users, List<Project> projects, String line) {
         switch (action) {
             case "CREATE_USER" -> processCreateUser(p, users);
-            case "CREATE_TASK" -> processCreateTask(p, workspace);
+            case "CREATE_TASK" -> processCreateTask(p, workspace, projects);
+            case "CREATE_PROJECT" -> processCreateProject(p, projects);
             case "ASSIGN_USER" -> processAssignUser(p, workspace, users);
             case "CHANGE_STATUS" -> processChangeStatus(p, workspace);
-            case "REPORT_STATUS" -> processReportStatus(workspace, users);
+            case "REPORT_STATUS" -> processReportStatus(workspace, users, projects);
             default -> System.err.println("[WARN] Ação desconhecida: " + action);
         }
     }
@@ -108,10 +109,36 @@ public class LogProcessor {
      * @param p parâmetros [title, deadline, effort]
      * @param workspace o workspace
      */
-    private void processCreateTask(String[] p, Workspace workspace) {
-        Task t = new Task(p[1], LocalDate.parse(p[2]), Integer.parseInt(p[3]));
+    private void processCreateTask(String[] p, Workspace workspace, List<Project> projects) {
+        String taskName = p[1];
+        LocalDate deadline = LocalDate.parse(p[2]);
+        int effort = Integer.parseInt(p[3]);
+        String projectName = p[4];
+
+        Project project = projects.stream()
+        .filter(e -> e.consultName().equals(projectName))
+        .findFirst()
+        .orElseThrow(() -> {
+            Task.incrementValidationErrors();
+            return new NexusValidationException("Projeto não encontrado no log: " + projectName);
+        });
+
+        Task t = new Task(taskName, deadline, effort);
+
+        project.addTask(t);
         workspace.addTask(t);
-        System.out.println("[LOG] Tarefa criada: " + p[1]);
+
+        System.out.println("[LOG] Tarefa '" + taskName + "' criada e vinculada ao projeto: " + projectName);
+    }
+
+    private void processCreateProject(String[] p, List<Project> projects) {
+        String title = p[1];
+        int totalBudget = Integer.parseInt(p[2]);
+
+        Project project = new Project(title, totalBudget);
+        projects.add(project);
+
+        System.out.println("[LOG] Projeto criado: " + title + " (Orçamento: " + totalBudget + "horas)");
     }
 
     /**
@@ -128,12 +155,18 @@ public class LogProcessor {
         Task task = workspace.getTasks().stream()
             .filter(t -> t.getId() == taskId)
             .findFirst()
-            .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
+            .orElseThrow(() -> {
+                Task.incrementValidationErrors();
+                return new NexusValidationException("Tarefa não encontrada: " + taskId);
+            });
 
         User owner = users.stream()
             .filter(u -> Objects.equals(u.consultUsername(), username))
             .findFirst()
-            .orElseThrow(() -> new NexusValidationException("Usuário não encontrado: " + username));
+            .orElseThrow(() -> {
+                Task.incrementValidationErrors();
+                return new NexusValidationException("Usuário não encontrado: " + username);
+            });
 
         task.assignOwner(owner);
         owner.assignTask(task);
@@ -153,7 +186,10 @@ public class LogProcessor {
         Task task = workspace.getTasks().stream()
             .filter(t -> t.getId() == taskId)
             .findFirst()
-            .orElseThrow(() -> new NexusValidationException("Tarefa não encontrada: " + taskId));
+            .orElseThrow(() -> {
+                Task.incrementValidationErrors();
+                return new NexusValidationException("Tarefa não encontrada: " + taskId);
+            });
 
         switch(status) {
             case "IN_PROGRESS" -> {
@@ -177,8 +213,9 @@ public class LogProcessor {
      * 
      * @param workspace o workspace
      * @param users lista de usuários
+     * @param projects lista de projetos
      */
-    private void processReportStatus(Workspace workspace, List<User> users) {
+    private void processReportStatus(Workspace workspace, List<User> users, List<Project> projects) {
         System.out.println("\nTop Performers:");
         List<User> top = workspace.topPerformers(users);
         for(int i = 0; i < top.size(); i++) {
@@ -194,8 +231,10 @@ public class LogProcessor {
         }
 
         System.out.println("\nProject Health:");
-        float health = workspace.projectHealth();
-        System.out.printf("%f%n", health);
+        for (Project p : projects) {
+            float health = workspace.projectHealth(p);
+            System.out.printf("- %s: %.2f%%%n", p.consultName(), health * 100);
+        }
 
         System.out.println("\nGlobal Bottlenecks:");
         String bottleneck = workspace.globalBottlenecks();

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import com.nexus.exception.NexusValidationException;
+import com.nexus.model.Project;
 import com.nexus.model.Task;
 import com.nexus.model.User;
 import com.nexus.service.LogProcessor;
@@ -26,6 +27,7 @@ public class Main {
     private static final Workspace workspace = new Workspace();
     private static final List<User> users = new ArrayList<>();
     private static final LogProcessor logProcessor = new LogProcessor();
+    private static final List<Project> projects = new ArrayList<>();
 
     /**
      * Inicia a aplicação e processa comandos do usuário até a terminação.
@@ -46,17 +48,19 @@ public class Main {
                 }
                 case "1" -> addUser();
                 case "2" -> addTask();
-                case "3" -> assignTaskToUser();
-                case "4" -> listUsers();
-                case "5" -> listTasks();
-                case "6" -> changeTaskStatus();
-                case "7" -> {
+                case "3" -> addProject();
+                case "4" -> assignTaskToUser();
+                case "5" -> listUsers();
+                case "6" -> listTasks();
+                case "7" -> listProjects();
+                case "8" -> changeTaskStatus();
+                case "9" -> {
                     System.out.print("Digite o número da versão do log para carregar (ex: 1 para log_v1.txt): ");
                     String logVersion = scanner.nextLine();
                     String fileName = "log_v" + logVersion + ".txt";
                     System.out.println("Carregando " + fileName + "...");
-                    logProcessor.processLog(fileName, workspace, users);
-                }
+                    logProcessor.processLog(fileName, workspace, users, projects);
+                  }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
         }
@@ -74,11 +78,13 @@ public class Main {
             ======= NEXUS CORE: MENU =======
             1. Adicionar Usuário
             2. Adicionar Tarefa
-            3. Atribuir Usuário à Tarefa
-            4. Listar Usuários
-            5. Listar Todas as Tarefas
-            6. Mudar Status da Tarefa
-            7. Processar Log de Ações
+            3. Adicionar Projeto
+            4. Atribuir Usuário à Tarefa
+            5. Listar Usuários
+            6. Listar Todas as Tarefas
+            7. Listar Todos os Projetos
+            8. Mudar Status da Tarefa
+            9. Processar Log de Ações
             0. Sair
             Escolha uma opção:\s""");
     }
@@ -100,6 +106,8 @@ public class Main {
             System.out.println("[OK] Usuário cadastrado.");
         } catch (NexusValidationException e) {
             System.err.println("[ERRO] " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("[ERRO] " + e.getMessage());
         }
     }
 
@@ -116,8 +124,16 @@ public class Main {
             LocalDate deadline = LocalDate.parse(scanner.nextLine());
             System.out.print("Estimated Effort (horas): ");
             int estimatedEffort = Integer.parseInt(scanner.nextLine());
+            System.out.print("Nome do Projeto: ");
+            String projectTitle = scanner.nextLine();
+
+            Project project = projects.stream()
+                .filter(p -> p.consultName().equals(projectTitle))
+                .findFirst()
+                .orElseThrow(() -> new NexusValidationException("Projeto '" + projectTitle + "' não encontrado."));
 
             Task newTask = new Task(title, deadline, estimatedEffort);
+            project.addTask(newTask);
             workspace.addTask(newTask);
 
             System.out.println("[OK] Tarefa adicionada ao backlog.");
@@ -127,6 +143,28 @@ public class Main {
             System.err.println("[ERRO] Estimated Effort inválido. Informe um número inteiro.");
         } catch (NexusValidationException e) {
             System.err.println("[ERRO] " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("[ERRO] " + e.getMessage());
+        }
+    }
+
+    private static void addProject() {
+        try {
+            System.out.print("Título do Projeto: ");
+            String title = scanner.nextLine();
+            System.out.print("Total Budget (horas)");
+            int totalBudget = Integer.parseInt(scanner.nextLine());
+
+            Project newProject = new Project(title, totalBudget);
+            projects.add(newProject);
+
+            System.out.println("[OK] Projeto adicionado");
+        } catch (NumberFormatException e) {
+            System.err.println("[ERRO] Total Budget inválido. Informe um número inteiro.");
+        } catch (NexusValidationException e) {
+            System.err.println(" [ERRO] " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println(" [ERRO " + e.getMessage());
         }
     }
 
@@ -245,6 +283,35 @@ public class Main {
             System.out.printf("| %-20s | %-22s | %-7d | %-9d | %-8d |%n",
                     truncar(user.consultUsername(), 20),
                     truncar(user.consultEmail(), 22),
+                    toDoCount,
+                    inProgressCount,
+                    doneCount);
+        }
+        System.out.println(header);
+    }
+
+    private static void listProjects() {
+        if (projects.isEmpty()) {
+            System.out.println("\n[!] Nenhum projeto no sistema.");
+            return;
+        }
+
+        String header = "+----------------------+----------------+----------------+---------+-----------+----------+";
+        System.out.println("\n" + header);
+        System.out.printf("| %-20s | %-14s | %-14s | %-7s | %-9s | %-8s |%n", "NAME", "CURRENT BUDGET", "TOTAL BUDGET", "TO DO", "IN PROG", "DONE");
+        System.out.println(header);
+
+        for (Project project : projects) {
+            List<Task> tasks = project.getAllTasks();
+            
+            long toDoCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.TO_DO).count();
+            long inProgressCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.IN_PROGRESS).count();
+            long doneCount = tasks.stream().filter(t -> t.getStatus() == com.nexus.model.TaskStatus.DONE).count();
+
+            System.out.printf("| %-20s | %-14d | %-14d | %-7d | %-9d | %-8d |%n",
+                    truncar(project.consultName(), 20),
+                    project.consultCurrentBudget(),
+                    project.consultTotalBudget(),
                     toDoCount,
                     inProgressCount,
                     doneCount);

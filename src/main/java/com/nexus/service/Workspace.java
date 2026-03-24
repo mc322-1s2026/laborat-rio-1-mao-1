@@ -1,8 +1,6 @@
 package com.nexus.service;
 
-import com.nexus.model.Task;
-import com.nexus.model.TaskStatus;
-import com.nexus.model.User;
+import com.nexus.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -45,7 +43,7 @@ public class Workspace {
      */
     public List<User> topPerformers(List<User> users) {
         return Collections.unmodifiableList(users.stream()
-            .sorted(Comparator.comparing(User::getCountDoneTasks))
+            .sorted(Comparator.comparingInt(User::getCountDoneTasks).reversed())
             .limit(3)
             .collect(Collectors.toList()));
     }
@@ -65,11 +63,18 @@ public class Workspace {
     /**
      * Calcula a saúde do projeto (valor entre 0 e 1).
      * 
+     * @param project o projeto a ser analisado (0.0 a 1.0)
      * @return indicador de saúde do projeto
      */
-    public float projectHealth() { 
-        // TODO when Project class is done
-        return (float) 1;
+    public float projectHealth(Project project) {
+        List<Task> projectTasks = project.getAllTasks();
+        if (projectTasks.isEmpty()) return 1.0f;
+
+        long doneCount = projectTasks.stream()
+            .filter(e -> e.getStatus() == TaskStatus.DONE)
+            .count();
+
+        return (float) doneCount / projectTasks.size();
     }
 
     /**
