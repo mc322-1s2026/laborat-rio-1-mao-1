@@ -20,8 +20,12 @@ public class Workspace {
      * Adiciona uma tarefa ao workspace.
      * 
      * @param task a tarefa a ser adicionada
+     * @throws IllegalArgumentException se a tarefa for nula
      */
     public void addTask(Task task) {
+        if (task == null) {
+            throw new IllegalArgumentException("Tarefa não pode ser nula.");
+        }
         tasks.add(task);
     }
 
@@ -40,8 +44,12 @@ public class Workspace {
      * 
      * @param users a lista de usuários para análise
      * @return até 3 usuários com melhor desempenho
+     * @throws IllegalArgumentException se a lista de usuários for nula
      */
     public List<User> topPerformers(List<User> users) {
+        if (users == null) {
+            throw new IllegalArgumentException("Lista de usuários não pode ser nula.");
+        }
         return Collections.unmodifiableList(users.stream()
             .sorted(Comparator.comparingInt(User::getCountDoneTasks).reversed())
             .limit(3)
@@ -53,8 +61,12 @@ public class Workspace {
      * 
      * @param users a lista de usuários para análise
      * @return usuários sobrecarregados
+     * @throws IllegalArgumentException se a lista de usuários for nula
      */
     public List<User> overloadedUsers(List<User> users) {
+        if (users == null) {
+            throw new IllegalArgumentException("Lista de usuários não pode ser nula.");
+        }
         return Collections.unmodifiableList(users.stream()
             .filter(e -> e.getCountInProgressTasks() > 10)
             .collect(Collectors.toList()));
@@ -65,8 +77,12 @@ public class Workspace {
      * 
      * @param project o projeto a ser analisado (0.0 a 1.0)
      * @return indicador de saúde do projeto
+     * @throws IllegalArgumentException se o projeto for nulo
      */
     public float projectHealth(Project project) {
+        if (project == null) {
+            throw new IllegalArgumentException("Projeto não pode ser nulo.");
+        }
         List<Task> projectTasks = project.getAllTasks();
         if (projectTasks.isEmpty()) return 1.0f;
 

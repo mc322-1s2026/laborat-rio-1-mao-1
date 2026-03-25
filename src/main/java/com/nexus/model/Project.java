@@ -15,7 +15,6 @@ public class Project {
     private final String name;
     private final List<Task> taskList;
     private final int totalBudget;
-    private int currentBudget;
 
     /**
      * Cria um novo projeto com orçamento definido.
@@ -35,7 +34,6 @@ public class Project {
         this.name = name;
         this.totalBudget = totalBudget;
         this.taskList = new ArrayList<>();
-        this.currentBudget = 0;
     }
 
     /**
@@ -51,11 +49,33 @@ public class Project {
     public int consultTotalBudget() { return totalBudget; }
     
     /**
-     * Retorna o orçamento já utilizado em horas.
-     * @return horas já alocadas
+     * Calcula e retorna o orçamento já utilizado em horas.
+     * Considera apenas tarefas não finalizadas (TO_DO, IN_PROGRESS, BLOCKED).
+     * Tarefas DONE não consomem orçamento.
+     * 
+     * @return horas já alocadas em tarefas ativas
      */
-    public int consultCurrentBudget() { return this.currentBudget; }
+    public int consultCurrentBudget() { 
+        return (int) this.taskList.stream()
+            .filter(t -> (t.getStatus() != TaskStatus.DONE && t.getStatus() != TaskStatus.BLOCKED))
+            .mapToInt(Task::getEstimatedEffort)
+            .sum();
+    }
 
+    /**
+     * Valida se é possível adicionar uma tarefa com o esforço informado
+     * sem exceder o orçamento do projeto.
+     * 
+     * @param effort o esforço em horas da tarefa a ser validada
+     * @return true se o orçamento permite adicionar; false caso contrário
+     * @throws IllegalArgumentException se o esforço for inválido
+     */
+    public boolean canAddTaskWithEffort(int effort) {
+        if (effort <= 0) {
+            throw new IllegalArgumentException("Esforço deve ser maior que 0.");
+        }
+        return consultCurrentBudget() + effort <= this.totalBudget;
+    }
 
     /**
      * Adiciona uma nova tarefa ao projeto.
@@ -73,13 +93,10 @@ public class Project {
         int taskEffort = task.getEstimatedEffort();
 
         if (!this.taskList.contains(task)) {
-            if (this.currentBudget + taskEffort > this.totalBudget) {
+            if (!canAddTaskWithEffort(taskEffort)) {
                 throw new NexusValidationException("A adição da tarefa supera o orçamento do projeto.");
             }
-            else {
-                currentBudget += taskEffort;
-                this.taskList.add(task);
-            }
+            this.taskList.add(task);
         }
     }
 

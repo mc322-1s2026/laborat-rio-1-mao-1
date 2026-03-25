@@ -1,26 +1,30 @@
 # Teste completo do LogProcessor - Todas as transições e casos de erro
 
+# ===== CRIANDO PROJETOS =====
+CREATE_PROJECT;Core System;80
+CREATE_PROJECT;Testing Framework;50
+
 # ===== CRIANDO USUÁRIOS =====
 CREATE_USER;nicolas.tesla;tesla@energy.com
 CREATE_USER;ada.lovelace;ada@calculus.gb
 CREATE_USER;alan.turing;alan@bletchley.org
 
 # ===== CRIANDO 15 TAREFAS PARA TESTAR TODAS AS COMBINAÇÕES =====
-CREATE_TASK;T1 - TO_DO para IN_PROGRESS;2026-03-25;5
-CREATE_TASK;T2 - IN_PROGRESS para DONE;2026-03-30;8
-CREATE_TASK;T3 - IN_PROGRESS para BLOCKED;2026-04-05;3
-CREATE_TASK;T4 - TO_DO para BLOCKED;2026-04-10;4
-CREATE_TASK;T5 - BLOCKED para BLOCKED (idempotente);2026-04-15;2
-CREATE_TASK;T6 - DONE para DONE (idempotente);2026-04-20;6
-CREATE_TASK;T7 - IN_PROGRESS para IN_PROGRESS (idempotente);2026-04-25;3
-CREATE_TASK;T8 - TO_DO para DONE (direto);2026-05-01;4
-CREATE_TASK;T9 - TO_DO para IN_PROGRESS para BLOCKED;2026-05-05;5
-CREATE_TASK;T10 - SEM OWNER para teste erro;2026-05-10;2
-CREATE_TASK;T11 - BLOCKED teste erro para IN_PROGRESS;2026-05-15;3
-CREATE_TASK;T12 - BLOCKED teste erro para DONE;2026-05-20;4
-CREATE_TASK;T13 - DONE teste erro para BLOCKED;2026-05-25;5
-CREATE_TASK;T14 - TO_DO para IN_PROGRESS para BLOCKED;2026-06-01;2
-CREATE_TASK;T15 - DONE teste erro para IN_PROGRESS;2026-06-05;3
+CREATE_TASK;T1 - TO_DO para IN_PROGRESS;2026-03-25;5;Core System
+CREATE_TASK;T2 - IN_PROGRESS para DONE;2026-03-30;8;Core System
+CREATE_TASK;T3 - IN_PROGRESS para BLOCKED;2026-04-05;3;Core System
+CREATE_TASK;T4 - TO_DO para BLOCKED;2026-04-10;4;Core System
+CREATE_TASK;T5 - BLOCKED para BLOCKED (idempotente);2026-04-15;2;Core System
+CREATE_TASK;T6 - DONE para DONE (idempotente);2026-04-20;6;Testing Framework
+CREATE_TASK;T7 - IN_PROGRESS para IN_PROGRESS (idempotente);2026-04-25;3;Testing Framework
+CREATE_TASK;T8 - TO_DO para DONE (direto);2026-05-01;4;Testing Framework
+CREATE_TASK;T9 - TO_DO para IN_PROGRESS para BLOCKED;2026-05-05;5;Testing Framework
+CREATE_TASK;T10 - SEM OWNER para teste erro;2026-05-10;2;Core System
+CREATE_TASK;T11 - BLOCKED teste erro para IN_PROGRESS;2026-05-15;3;Testing Framework
+CREATE_TASK;T12 - BLOCKED teste erro para DONE;2026-05-20;4;Testing Framework
+CREATE_TASK;T13 - DONE teste erro para BLOCKED;2026-05-25;5;Core System
+CREATE_TASK;T14 - TO_DO para IN_PROGRESS para BLOCKED;2026-06-01;2;Core System
+CREATE_TASK;T15 - DONE teste erro para IN_PROGRESS;2026-06-05;3;Testing Framework
 
 # ===== ATRIBUINDO USUÁRIOS A TAREFAS (T10 não será atribuída!) =====
 ASSIGN_USER;1;nicolas.tesla

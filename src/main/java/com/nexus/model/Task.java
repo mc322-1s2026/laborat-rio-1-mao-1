@@ -21,7 +21,7 @@ public class Task {
     private final String title;
     private TaskStatus status;
     private User owner;
-    private int estimatedEffort;
+    private final int estimatedEffort;
 
     /**
      * Cria uma nova tarefa.

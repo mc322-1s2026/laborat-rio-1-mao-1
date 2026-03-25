@@ -1,49 +1,106 @@
 # Casos de erro para LogProcessor
 
-# Ação desconhecida
+# ===== CREATE_PROJECT ERRORS =====
+
+# Comando incompleto (faltando orçamento)
+CREATE_PROJECT;Project One
+
+# Nome vazio (apenas ponto-e-vírgula)
+CREATE_PROJECT;;50
+
+# Orçamento zero (não permitido)
+CREATE_PROJECT;Invalid Budget;0
+
+# Orçamento negativo (não permitido)
+CREATE_PROJECT;Negative Budget;-50
+
+# Orçamento não-número
+CREATE_PROJECT;Bad Budget;cento-horas
+
+# Comando incompleto (faltando tudo)
+CREATE_PROJECT
+
+# Criando projetos válidos para testes posteriores
+CREATE_PROJECT;Valid Project;100
+CREATE_PROJECT;Limited Project;15
+
+# ===== AÇÃO DESCONHECIDA =====
 UNKNOWN_COMMAND;param1;param2
 
-# CREATE_USER
+# ===== CREATE_USER =====
+
 # Comando incompleto (faltando email)
 CREATE_USER;user1
 # Comando incompleto (faltando nome e email)
 CREATE_USER
 
-# CREATE_TASK
-# Comando incompleto (faltando data e esforço)
+# Email inválido para testar
+CREATE_USER;test.user;invalid-email
+
+# Criando usuários válidos para testes posteriores
+CREATE_USER;alice.smith;alice@company.com
+CREATE_USER;bob.jones;bob@company.com
+
+# ===== CREATE_TASK =====
+
+# Comando incompleto (faltando data, esforço e projeto)
 CREATE_TASK;Tarefa de Teste
-# Comando incompleto (faltando esforço)
+
+# Comando incompleto (faltando esforço e projeto)
 CREATE_TASK;Tarefa de Teste;2026-04-01
+
+# Comando incompleto (faltando projeto)
+CREATE_TASK;Tarefa de Teste;2026-04-01;5
+
 # Data inválida
-CREATE_TASK;Tarefa de Teste;data-invalida;5
+CREATE_TASK;Tarefa de Teste;data-invalida;5;Valid Project
+
 # Esforço inválido
-CREATE_TASK;Tarefa de Teste;2026-04-01;esforco-invalido
+CREATE_TASK;Tarefa de Teste;2026-04-01;esforco-invalido;Valid Project
 
-# ASSIGN_USER
-# Comando incompleto (faltando ID do usuário)
+# Projeto não existente (NexusValidationException)
+CREATE_TASK;Tarefa de Teste;2026-04-01;5;Nonexistent Project
+
+# Tarefa que excede orçamento do projeto (NexusValidationException)
+CREATE_TASK;Task 1;2026-04-01;10;Limited Project
+CREATE_TASK;Task 2;2026-04-02;10;Limited Project
+CREATE_TASK;Task 3 - Exceeds Budget;2026-04-03;10;Limited Project
+
+# Tarefas válidas para outros testes
+CREATE_TASK;Valid Task 1;2026-04-05;8;Valid Project
+CREATE_TASK;Valid Task 2;2026-04-10;12;Valid Project
+
+# ===== ASSIGN_USER =====
+
+# Comando incompleto (faltando username)
 ASSIGN_USER;1
-# ID da tarefa inválido
-ASSIGN_USER;id-tarefa-invalido;1
-# ID do usuário inválido
-ASSIGN_USER;1;id-usuario-invalido
-# Tarefa não existente (NexusValidationException)
-ASSIGN_USER;999;1
-# Usuário não existente (NexusValidationException)
-ASSIGN_USER;1;999
 
-# CHANGE_STATUS
+# ID da tarefa inválido
+ASSIGN_USER;id-tarefa-invalido;alice.smith
+
+# Tarefa não existente (NexusValidationException)
+ASSIGN_USER;999;alice.smith
+
+# Usuário não existente (NexusValidationException)
+ASSIGN_USER;1;nonexistent.user
+
+# ===== CHANGE_STATUS =====
+
 # Comando incompleto (faltando novo status)
 CHANGE_STATUS;1
+
 # ID da tarefa inválido
 CHANGE_STATUS;id-tarefa-invalido;IN_PROGRESS
+
 # Status inválido (RuntimeException: No enum constant)
 CHANGE_STATUS;1;STATUS_INVALIDO
+
 # Tarefa não existente (NexusValidationException)
 CHANGE_STATUS;999;DONE
 
-# REPORT_STATUS
-# Este comando não possui parâmetros que possam causar erros de formato diretamente na linha de comando,
-# mas pode expor erros se os dados subjacentes (tarefas, usuários) estiverem em um estado inconsistente,
-# o que seria capturado por NexusValidationException durante o processamento.
-# Exemplo: uma tarefa com um usuário atribuído que não existe mais.
-REPORT_STATUS
+# Transição inválida: sem owner
+CHANGE_STATUS;1;IN_PROGRESS
+
+# ===== REPORT_STATUS =====
+
+# Relatório com dados inconsistentes

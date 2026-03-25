@@ -203,6 +203,8 @@ public class Main {
             System.err.println("[ERRO] ID da tarefa inválido.");
         } catch (NexusValidationException e) {
             System.err.println("[ERRO] " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("[ERRO] " + e.getMessage());
         }
     }
 

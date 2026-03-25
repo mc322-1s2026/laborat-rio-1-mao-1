@@ -119,9 +119,13 @@ public class LogProcessor {
         .filter(e -> e.consultName().equals(projectName))
         .findFirst()
         .orElseThrow(() -> {
-            Task.incrementValidationErrors();
             return new NexusValidationException("Projeto não encontrado no log: " + projectName);
         });
+
+        // Validar orçamento ANTES de criar a Task para não consumir ID desnecessariamente
+        if (!project.canAddTaskWithEffort(effort)) {
+            throw new NexusValidationException("A adição da tarefa supera o orçamento do projeto.");
+        }
 
         Task t = new Task(taskName, deadline, effort);
 
@@ -170,7 +174,6 @@ public class LogProcessor {
             .filter(u -> Objects.equals(u.consultUsername(), username))
             .findFirst()
             .orElseThrow(() -> {
-                Task.incrementValidationErrors();
                 return new NexusValidationException("Usuário não encontrado: " + username);
             });
 
