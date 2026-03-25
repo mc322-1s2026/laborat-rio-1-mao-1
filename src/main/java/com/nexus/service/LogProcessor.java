@@ -131,6 +131,12 @@ public class LogProcessor {
         System.out.println("[LOG] Tarefa '" + taskName + "' criada e vinculada ao projeto: " + projectName);
     }
 
+    /**
+     * Processa comando CREATE_PROJECT.
+     * 
+     * @param p parâmetros [title, totalBudget]
+     * @param projects lista de projetos
+     */
     private void processCreateProject(String[] p, List<Project> projects) {
         String title = p[1];
         int totalBudget = Integer.parseInt(p[2]);

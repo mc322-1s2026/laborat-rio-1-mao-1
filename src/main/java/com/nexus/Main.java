@@ -148,6 +148,11 @@ public class Main {
         }
     }
 
+    /**
+     * Solicita ao usuário o nome e orçamento do projeto, cria um novo {@link Project}
+     * e o adiciona à lista interna. Exceções de validação são relatadas no
+     * fluxo de erro.
+     */
     private static void addProject() {
         try {
             System.out.print("Título do Projeto: ");
@@ -168,6 +173,11 @@ public class Main {
         }
     }
 
+    /**
+     * Solicita ao usuário o ID da tarefa e o username do responsável.
+     * Atribui o usuário à tarefa e vice-versa, criando uma associação bidirecional.
+     * Exceções de localização e validação são reportadas no stderr.
+     */
     private static void assignTaskToUser() {
         try {
             System.out.print("ID da Tarefa: ");
@@ -196,6 +206,11 @@ public class Main {
         }
     }
 
+    /**
+     * Solicita ao usuário o ID da tarefa e o novo status desejado.
+     * Atualiza o status da {@link Task} através dos métodos apropriados
+     * (moveToInProgress, markAsDone, setBlocked). Exceções são reportadas no stderr.
+     */
     private static void changeTaskStatus() {
         try {
             System.out.print("ID da Tarefa: ");
@@ -261,7 +276,8 @@ public class Main {
     }
 
     /**
-     * Lista todos os usuários com a contagem de tarefas por status em formato de tabela.
+     * Lista todos os usuários na forma de tabela com contagem de tarefas
+     * agrupadas por status. Se não houver usuários, imprime mensagem de notificação.
      */
     private static void listUsers() {
         if (users.isEmpty()) {
@@ -290,6 +306,11 @@ public class Main {
         System.out.println(header);
     }
 
+    /**
+     * Lista todos os projetos em formato de tabela mostrando orçamento
+     * (atual e total) e distribuição de tarefas por status. Se não houver
+     * projetos, imprime mensagem de notificação.
+     */
     private static void listProjects() {
         if (projects.isEmpty()) {
             System.out.println("\n[!] Nenhum projeto no sistema.");
