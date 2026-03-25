@@ -55,12 +55,17 @@ public class Main {
                 case "7" -> listProjects();
                 case "8" -> changeTaskStatus();
                 case "9" -> {
-                    System.out.print("Digite o número da versão do log para carregar (ex: 1 para log_v1.txt): ");
-                    String logVersion = scanner.nextLine();
-                    String fileName = "log_v" + logVersion + ".txt";
-                    System.out.println("Carregando " + fileName + "...");
-                    logProcessor.processLog(fileName, workspace, users, projects);
-                  }
+                    // New method to dynamic choose log
+                    // System.out.print("Digite o número da versão do log para carregar (ex: 1 para log_v1.txt): ");
+                    // String logVersion = scanner.nextLine();
+                    // String fileName = "log_v" + logVersion + ".txt";
+                    // System.out.println("Carregando " + fileName + "...");
+                    // logProcessor.processLog(fileName, workspace, users, projects);
+                    System.out.println("1. Carregar Log V1 (Básico)\n2. Carregar Log V2 (Desafio)");
+                    String logChoice = scanner.nextLine();
+                    String file = (logChoice.equals("1")) ? "log_v1.txt" : "log_v2.txt";
+                    logProcessor.processLog(file, workspace, users, projects);
+                }
                 default -> System.out.println("\n[!] Opção inválida.");
             }
         }
